@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <!-- TODO(素材): 正式名称 / 一句话描述 -->
+  <title>BenchName</title>
+  <meta name="description" content="TODO: one-sentence description of the benchmark." />
+  <meta property="og:title" content="BenchName" />
+  <meta property="og:description" content="TODO: one-sentence description of the benchmark." />
+  <meta property="og:image" content="static/images/og-cover.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="static/images/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"></span>BenchName</a>
+      <div class="nav-links">
+        <a href="#overview">Overview</a>
+        <a href="#design">Design</a>
+        <a href="#evaluation">Evaluation</a>
+        <a href="#leaderboard">Leaderboard</a>
+        <a href="#analysis">Findings</a>
+        <a href="#compare">Compare</a>
+        <a href="#demos">Demos</a>
+        <a href="#citation">Cite</a>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark theme">
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1Zm0 1.5v11a5.5 5.5 0 0 1 0-11Z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ============ HERO ============ -->
+  <header class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <!-- TODO(素材): 会议/状态 -->
+        <div class="eyebrow">Rezona · Preprint 2026</div>
+        <h1 class="hero-title">BenchName</h1>
+        <!-- TODO(素材): 副标题 -->
+        <p class="hero-subtitle">Can coding agents ship a playable game, end to end, inside a real engine?</p>
+
+        <!-- TODO(素材): 作者 + 单位 + 共一/通讯标记 -->
+        <p class="authors">
+          <a href="#">Author One</a><sup>1*</sup>,
+          <a href="#">Author Two</a><sup>1*</sup>,
+          <a href="#">Author Three</a><sup>2</sup>,
+          <a href="#">Author Four</a><sup>1†</sup>
+        </p>
+        <p class="affiliations"><sup>1</sup>Rezona &nbsp; <sup>2</sup>Partner Institution &nbsp;·&nbsp; <sup>*</sup>Equal contribution &nbsp; <sup>†</sup>Corresponding</p>
+
+        <!-- TODO(素材): 各链接地址 -->
+        <div class="links">
+          <a class="btn primary" href="#" target="_blank" rel="noopener">Read the paper</a>
+          <a class="btn" href="#" target="_blank" rel="noopener">arXiv</a>
+          <a class="btn" href="#" target="_blank" rel="noopener">Code</a>
+          <a class="btn" href="#" target="_blank" rel="noopener">Dataset</a>
+          <a class="btn ghost" href="#leaderboard">Leaderboard ↓</a>
+        </div>
+      </div>
+
+      <!-- 首屏主视觉：轮播真实录屏片段（data/demos.js 的 heroReel） -->
+      <div class="viewport hero-reel" aria-label="Gameplay clips from agent-built games">
+        <div class="viewport-bar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="vp-title" id="reelTask">loading…</span>
+          <span class="vp-status done" id="reelModel"></span>
+        </div>
+        <div class="reel-stage">
+          <video id="reelA" muted playsinline preload="auto"></video>
+          <video id="reelB" muted playsinline preload="auto"></video>
+        </div>
+        <div class="viewport-foot">
+          <span id="reelFamily"></span>
+          <span class="reel-dots" id="reelDots"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="hud" id="stats"></div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============ OVERVIEW / ABSTRACT ============ -->
+    <section class="section" id="overview">
+      <div class="wrap">
+        <div class="split">
+          <div class="section-head">
+            <div class="eyebrow">Abstract</div>
+            <!-- TODO(素材): 一句话核心问题 -->
+            <h2>TODO: the core research question in one line.</h2>
+          </div>
+          <!-- TODO(素材): 论文摘要 -->
+          <div class="prose" id="abstract">
+            <p>TODO: Paste the paper abstract here. This paragraph is placeholder text that sets the measure and rhythm for the real abstract, which usually runs 150 to 250 words.</p>
+            <p>A second paragraph is optional. Keep the abstract identical to the paper so it can be quoted.</p>
+          </div>
+        </div>
+        <figure class="figure">
+          <img data-ph="static/images/figures/teaser.jpg" src="static/images/figures/teaser.jpg" alt="A grid of nine games built by agents: real-time strategy, side-scrolling shooters, an isometric puzzle, a platformer, an ecosystem sandbox, a tower defense game and a bookshop sim" />
+          <figcaption><b>Figure 1.</b> Games built end to end by Fable 5.1 and GPT-6 Astra on the benchmark, spanning strategy, action, puzzle, sandbox and tabletop categories.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ DESIGN ============ -->
+    <section class="section" id="design">
+      <div class="wrap">
+        <div class="section-head row">
+          <div>
+            <div class="eyebrow">Benchmark design</div>
+            <h2>Three things a game benchmark has to get right</h2>
+          </div>
+        </div>
+        <div class="desiderata" id="desiderata"></div>
+
+        <figure class="figure">
+          <img data-ph="static/images/figures/overview.png&#10;方法总览图 · task → agent → artifact → evaluation" src="static/images/figures/overview.png" alt="Overview" />
+          <figcaption><b>Figure 2.</b> TODO: overview figure caption.</figcaption>
+        </figure>
+
+        <div class="block">
+          <h3>Compared with existing benchmarks</h3>
+          <div class="table-wrap">
+            <table class="table compare" id="comparisonTable"></table>
+          </div>
+        </div>
+
+        <div class="block split">
+          <div>
+            <h3>Task suite</h3>
+            <p class="muted" id="familyTotal"></p>
+            <div class="families" id="familyBars"></div>
+          </div>
+          <div>
+            <h3>Example task</h3>
+            <div class="spec">
+              <div class="spec-head"><span>task.md</span><span class="muted">Platformer</span></div>
+              <!-- TODO(素材): 一个代表性任务的 prompt -->
+              <pre id="examplePrompt">TODO: paste one representative task specification here.
+
+Build a 2D platformer with three levels, a double jump,
+collectible coins, and a pause menu. ...</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ EVALUATION ============ -->
+    <section class="section tinted" id="evaluation">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">Evaluation protocol</div>
+          <h2>From a project folder to a score</h2>
+        </div>
+        <ol class="pipeline" id="evalSteps"></ol>
+        <figure class="figure">
+          <img data-ph="static/images/figures/eval-pipeline.png&#10;评测流水线图" src="static/images/figures/eval-pipeline.png" alt="Evaluation pipeline" />
+          <figcaption><b>Figure 3.</b> TODO: evaluation pipeline caption.</figcaption>
+        </figure>
+        <div class="block">
+          <h3>Rubric categories</h3>
+          <dl class="rubrics" id="rubrics"></dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LEADERBOARD ============ -->
+    <section class="section" id="leaderboard">
+      <div class="wrap">
+        <div class="section-head row">
+          <div>
+            <div class="eyebrow">Leaderboard</div>
+            <h2>How current agents score</h2>
+          </div>
+          <div class="lb-controls">
+            <div class="seg" id="lbFilter" role="group" aria-label="Filter models">
+              <button class="active" data-filter="all">All</button>
+              <button data-filter="proprietary">Proprietary</button>
+              <button data-filter="open">Open-weight</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="table leaderboard" id="leaderboardTable"></table>
+        </div>
+        <p class="table-note"><span id="lbNote"></span> <span id="lbUpdated"></span></p>
+      </div>
+    </section>
+
+    <!-- ============ ANALYSIS ============ -->
+    <section class="section tinted" id="analysis">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">Analysis</div>
+          <h2>What we found</h2>
+        </div>
+        <div class="findings" id="findings"></div>
+      </div>
+    </section>
+
+    <!-- ============ SAME-TASK COMPARISON ============ -->
+    <section class="section" id="compare">
+      <div class="wrap">
+        <div class="section-head row">
+          <div>
+            <div class="eyebrow">Same prompt, two agents</div>
+            <h2>One task, side by side</h2>
+            <p class="muted">Each pair below was built from the identical task specification. Both clips start together.</p>
+          </div>
+          <div class="seg" id="compareTabs" role="tablist"></div>
+        </div>
+        <div class="compare-grid" id="compareGrid"></div>
+      </div>
+    </section>
+
+    <!-- ============ DEMOS ============ -->
+    <section class="section tinted" id="demos">
+      <div class="wrap">
+        <div class="section-head row">
+          <div>
+            <div class="eyebrow">Demos</div>
+            <h2>Games the agents built</h2>
+            <p class="muted">Gameplay recordings, sampled across score tiers for each model: strong, typical and weak results are all shown.</p>
+          </div>
+          <div class="seg" id="demoTabs" role="tablist"></div>
+        </div>
+        <div class="demo-grid" id="demoGrid"></div>
+      </div>
+    </section>
+
+    <!-- ============ CITATION ============ -->
+    <section class="section tinted" id="citation">
+      <div class="wrap split">
+        <div class="section-head">
+          <div class="eyebrow">Citation</div>
+          <h2>Cite this work</h2>
+          <!-- TODO(素材): 致谢 -->
+          <p class="muted ack">TODO: acknowledgements. Thanks to the teams behind the engine and harness this benchmark builds on.</p>
+        </div>
+        <div class="bibtex">
+          <div class="spec-head"><span>bibtex</span><button class="copy-btn" id="copyBib">Copy</button></div>
+          <!-- TODO(素材): BibTeX -->
+<pre id="bibtex">@article{rezona2026benchname,
+  title   = {BenchName: TODO Paper Title},
+  author  = {Author, One and Author, Two and Author, Three},
+  journal = {arXiv preprint arXiv:XXXX.XXXXX},
+  year    = {2026}
+}</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span><span class="brand-mark" aria-hidden="true"></span>BenchName · Rezona 2026</span>
+      <span class="muted">TODO: footer tagline</span>
+    </div>
+  </footer>
+
+  <!-- Play modal -->
+  <div class="modal" id="playModal" aria-hidden="true">
+    <div class="modal-box">
+      <div class="viewport-bar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="vp-title" id="playTitle"></span>
+        <a id="playNewTab" class="modal-link" target="_blank" rel="noopener">Open in new tab ↗</a>
+        <button id="playClose" class="modal-close" aria-label="Close">✕</button>
+      </div>
+      <iframe id="playFrame" title="Game" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- Data (编辑这些文件即可更新内容) -->
+  <script src="data/content.js"></script>
+  <script src="data/leaderboard.js"></script>
+  <script src="data/demos.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
