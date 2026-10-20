@@ -1,6 +1,6 @@
 # OCTAVE Website
 
-OCTAVE: A Capability-Resolved Benchmark for Complete HTML5 Game Generation.
+OCTAVE: A Capability-Resolved Benchmark for End-to-End HTML5 Game Generation.
 
 Pure static site (HTML/CSS/JS, no build step).
 
