@@ -25,7 +25,7 @@ BENCH.comparison = {
     ["GameCraft-Bench", "Real game engine", "140", false, "Partial", false, true],
     ["WebGameBench", "Browser games", "111", false, false, false, true],
     ["GameXpert-Bench", "Web games", "97", false, true, false, true],
-    { highlight: true, cells: ["H5-Benchmark (Ours)", "HTML5 / Web browser", "180", true, true, true, true] },
+    { highlight: true, cells: ["OCTAVE (Ours)", "HTML5 / Web browser", "180", true, true, true, true] },
   ],
 };
 

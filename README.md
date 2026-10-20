@@ -1,4 +1,6 @@
-# H5-Benchmark Website
+# OCTAVE Website
+
+OCTAVE: A Capability-Resolved Benchmark for Complete HTML5 Game Generation.
 
 Pure static site (HTML/CSS/JS, no build step).
 
