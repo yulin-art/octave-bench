@@ -128,89 +128,97 @@
     $("#familyTotal").textContent = `${fams.length} game categories`;
     $("#familyBars").innerHTML = `<div class="fam-chips">${fams.map((f) => `<span class="fam-chip">${esc(f.name)}</span>`).join("")}</div>`;
   }
+  $("#suiteSplit").innerHTML = (B.suiteSplit || []).map((x) =>
+    `<div><b>${x.count}</b><span>${esc(x.label)}</span></div>`).join("");
+  if (B.exampleTask) {
+    $("#exampleId").textContent = B.exampleTask.id;
+    $("#exampleTags").textContent = B.exampleTask.tags;
+    $("#examplePrompt").textContent = B.exampleTask.prompt;
+  }
 
   // ---------- evaluation ----------
   $("#evalSteps").innerHTML = (B.evalSteps || []).map((s) =>
     `<li class="pipe-step"><h4>${esc(s.title)}</h4><p>${esc(s.desc)}</p></li>`).join("");
   $("#rubrics").innerHTML = rubrics.map((r) =>
-    `<div class="rubric"><dt><span class="sw"></span>${esc(r.title)}</dt><dd>${esc(r.desc)}</dd></div>`).join("");
+    `<div class="rubric"><dt><span class="cap-key">${esc(r.key)}</span>${esc(r.title)}</dt><dd>${esc(r.desc)}</dd></div>`).join("");
 
   // ---------- leaderboard ----------
   const LB = B.leaderboard || { entries: [] };
   $("#lbNote").textContent = LB.note || "";
-  $("#lbUpdated").textContent = LB.updated ? `Last updated ${LB.updated}.` : "";
-  const scored = LB.entries.some((e) => e.scores);
-  const sc = (e, k) => (e.scores ? e.scores[k] : null);
-  const ranked = scored
-    ? [...LB.entries].sort((a, b) => (sc(b, "overall") ?? -1) - (sc(a, "overall") ?? -1)).map((e, i) => ({ ...e, rank: e.scores ? i + 1 : null }))
-    : LB.entries.map((e) => ({ ...e, rank: null }));
-  const has = (k) => LB.entries.some((e) => e[k]);
-  if (!LB.entries.some((e) => e.open)) $("#lbFilter").hidden = true;
-  let lbFilter = "all", lbSort = scored ? { key: "overall", dir: -1 } : null;
+  $("#lbUpdated").textContent = LB.updated ? `Analysis release ${LB.updated}.` : "";
+  const capTitle = Object.fromEntries(rubrics.map((r) => [r.key, r.title]));
+  const capKeys = rubrics.map((r) => r.key);
+  const ranked = [...LB.entries].sort((a, b) => b.completeness - a.completeness).map((e, i) => ({ ...e, rank: i + 1 }));
+  let lbFilter = "all", lbView = "summary", lbSort = { key: "completeness", dir: -1 };
+  const lbVal = (e, k) => (capKeys.includes(k) ? e.caps[k] : e[k]);
+  const pctBar = (v, cls = "") => `<div class="ov ${cls}"><span class="ov-bar"><span style="width:${v}%"></span></span><span class="ov-num">${fmt(v)}</span></div>`;
 
   function renderLB() {
     const cols = [
-      scored && { key: "rank", label: "#" },
-      { key: "model", label: has("agent") ? "Model / Agent" : "Model" },
-      { key: "org", label: "Organization" },
-      has("type") && { key: "type", label: "Input" },
-      { key: "overall", label: "Overall", cls: "overall" },
-      ...rubrics.map((r) => ({ key: r.key, label: r.short || r.title })),
-      has("date") && { key: "date", label: "Released" },
-    ].filter(Boolean);
-    const val = (e, k) => (rubrics.some((r) => r.key === k) || k === "overall" ? sc(e, k) ?? -1 : e[k] ?? "");
-    const rows = ranked.filter((e) => lbFilter === "all" || (lbFilter === "open" ? e.open : !e.open));
-    if (lbSort) rows.sort((a, b) => {
-      const x = val(a, lbSort.key), y = val(b, lbSort.key);
+      { key: "rank", label: "#" },
+      { key: "model", label: "Model / Harness" },
+      ...(lbView === "summary"
+        ? [{ key: "completeness", label: "Completeness", cls: "overall", tip: "Pass rate on the 6 public requirements per task" },
+           { key: "richness", label: "Richness", cls: "overall", tip: "Pass rate on the 4 hidden requirements per task" },
+           { key: "gateFail", label: "Gate fail", tip: "Share of attempts that fail the static gate or produce no artifact (lower is better)" }]
+        : capKeys.map((k) => ({ key: k, label: k, tip: capTitle[k] }))),
+    ];
+    const rows = ranked.filter((e) => lbFilter === "all" || e.harness === lbFilter);
+    rows.sort((a, b) => {
+      const x = lbVal(a, lbSort.key), y = lbVal(b, lbSort.key);
       return (typeof x === "number" ? x - y : String(x).localeCompare(String(y))) * lbSort.dir;
     });
     const best = {};
-    if (scored) rubrics.forEach((r) => (best[r.key] = Math.max(...rows.map((e) => sc(e, r.key) ?? -1))));
+    cols.forEach((c) => {
+      const vs = rows.map((e) => lbVal(e, c.key)).filter((v) => typeof v === "number");
+      if (c.key !== "rank" && vs.length) best[c.key] = c.key === "gateFail" ? Math.min(...vs) : Math.max(...vs);
+    });
 
     const head = `<thead><tr>${cols.map((c) => {
-      const on = lbSort && lbSort.key === c.key;
-      return `<th data-key="${c.key}" class="${c.cls || ""} ${on ? "sorted" : ""}" aria-sort="${on ? (lbSort.dir < 0 ? "descending" : "ascending") : "none"}">${esc(c.label)}${on ? `<span class="arr"> ${lbSort.dir < 0 ? "↓" : "↑"}</span>` : ""}</th>`;
+      const on = lbSort.key === c.key;
+      return `<th data-key="${c.key}" class="${c.cls || ""} ${on ? "sorted" : ""}" ${c.tip ? `title="${esc(c.tip)}"` : ""} aria-sort="${on ? (lbSort.dir < 0 ? "descending" : "ascending") : "none"}">${esc(c.label)}${on ? `<span class="arr"> ${lbSort.dir < 0 ? "↓" : "↑"}</span>` : ""}</th>`;
     }).join("")}</tr></thead>`;
 
     const cell = {
-      rank: (e) => `<td class="rank r${e.rank}"><b>${e.rank ?? "—"}</b></td>`,
-      model: (e) => `<td><div class="who">${mono(e.org)}<div class="who-text"><b>${esc(e.model)}</b>${e.agent || e.open ? `<small>${esc(e.agent)}${e.open ? (e.agent ? " · " : "") + "open-weight" : ""}</small>` : ""}</div></div></td>`,
-      org: (e) => `<td class="muted">${esc(e.org)}</td>`,
-      type: (e) => `<td>${e.type ? `<span class="tag ${e.type === "Vision" ? "vision" : ""}">${esc(e.type)}</span>` : ""}</td>`,
-      overall: (e) => e.scores ? `<td class="overall"><div class="ov">
-        <span class="ov-bar"><span style="width:${e.scores.overall}%"></span></span>
-        <span class="ov-num">${fmt(e.scores.overall)}</span>
-        <span class="ov-ci">${e.ci != null ? "±" + e.ci : ""}</span></div></td>`
-        : `<td class="overall"><div class="ov"><span class="ov-bar pending"></span><span class="ov-num muted">—</span><span class="ov-ci"></span></div></td>`,
-      date: (e) => `<td class="muted">${esc(e.date)}</td>`,
+      rank: (e) => `<td class="rank r${e.rank}"><b>${e.rank}</b></td>`,
+      model: (e) => `<td><div class="who">${mono(e.org)}<div class="who-text"><b>${esc(e.model)}${e.selfEval ? '<sup class="dagger" title="Evaluated by the same model">†</sup>' : ""}</b><small>${esc(e.harness)}</small></div></div></td>`,
+      completeness: (e) => `<td class="overall">${pctBar(e.completeness, e.completeness === best.completeness ? "best" : "")}</td>`,
+      richness: (e) => `<td class="overall">${pctBar(e.richness, "rich " + (e.richness === best.richness ? "best" : ""))}</td>`,
+      gateFail: (e) => `<td class="num ${e.gateFail === best.gateFail ? "best-low" : ""}">${fmt(e.gateFail)}</td>`,
     };
     const body = rows.map((e) => `<tr>${cols.map((c) => {
       if (cell[c.key]) return cell[c.key](e);
-      const v = sc(e, c.key);
-      if (v == null) return `<td class="heat muted">—</td>`;
-      return `<td class="heat ${v === best[c.key] ? "best" : ""}" style="background:color-mix(in srgb, var(--accent) ${Math.round((v / 100) * 22)}%, transparent)">${fmt(v)}</td>`;
+      const v = e.caps[c.key];
+      return `<td class="heat ${v === best[c.key] ? "best" : ""}" style="--h:${Math.round(v * 0.8)}%">${fmt(v)}</td>`;
     }).join("")}</tr>`).join("");
 
     const t = $("#leaderboardTable");
+    t.classList.toggle("caps", lbView === "caps");
     t.innerHTML = head + `<tbody>${body}</tbody>`;
     t.querySelectorAll("th").forEach((th) => th.addEventListener("click", () => {
       const k = th.dataset.key;
-      lbSort = lbSort && lbSort.key === k ? { key: k, dir: -lbSort.dir } : { key: k, dir: ["rank", "model", "org", "type"].includes(k) ? 1 : -1 };
+      lbSort = lbSort.key === k ? { key: k, dir: -lbSort.dir } : { key: k, dir: ["rank", "model", "gateFail"].includes(k) ? 1 : -1 };
       renderLB();
     }));
   }
-  $("#lbFilter").addEventListener("click", (ev) => {
+  const segPick = (el, attr, set) => el.addEventListener("click", (ev) => {
     const b = ev.target.closest("button"); if (!b) return;
-    lbFilter = b.dataset.filter;
-    $("#lbFilter").querySelectorAll("button").forEach((x) => x.classList.toggle("active", x === b));
+    set(b.dataset[attr]);
+    el.querySelectorAll("button").forEach((x) => x.classList.toggle("active", x === b));
     renderLB();
+  });
+  segPick($("#lbFilter"), "filter", (v) => (lbFilter = v));
+  segPick($("#lbView"), "view", (v) => {
+    lbView = v;
+    if (!["rank", "model"].includes(lbSort.key)) lbSort = v === "caps" ? { key: "C1", dir: -1 } : { key: "completeness", dir: -1 };
   });
   renderLB();
 
   // ---------- findings ----------
   $("#findings").innerHTML = (B.findings || []).map((f) => `
-    <article class="finding">
+    <article class="finding ${f.wide ? "wide" : ""}">
       <h4>${esc(f.title)}</h4>
+      ${f.stat ? `<div class="finding-stat"><b>${esc(f.stat)}</b><span>${esc(f.statLabel || "")}</span></div>` : ""}
       <p>${esc(f.desc)}</p>
       ${f.image ? `<img class="finding-img" data-ph="${esc(f.image)}" src="${esc(f.image)}" alt="">` : ""}
     </article>`).join("");
